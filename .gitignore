@@ -16,7 +16,7 @@ Crc/Output/ppdd.txt
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
-
+MergePDF/Output/
 # Mono auto generated files
 mono_crash.*
 
