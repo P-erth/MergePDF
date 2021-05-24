@@ -16,19 +16,19 @@ namespace MergePDF
         static void Main(string[] args)
         {
             
-            string stdIn = "9800000000";
+            string stdIn = "";
             foreach (string value in args) stdIn = value;
             string ruta = stdIn.Substring(0,2);
             string secuencia = stdIn.Substring(2,8);
-            ruta = "02";
-            secuencia = "0";
+           //ruta = "02";
+           // secuencia = "0";
             bool isNoventaYOcho;
 
             ruta = "98";
             var path = "";
             if (ruta == "98")
             {
-                path = Path.Combine(@"i:/_pdf_col/" , "ppdd-t2.txt");
+                path = @"I:/_pdf_col/ppdd-t2.txt";
                 isNoventaYOcho = true;
             }
             else
@@ -89,7 +89,7 @@ namespace MergePDF
             document.Options.FlateEncodeMode = PdfFlateEncodeMode.BestCompression;
             string filename = "PdfPrueba.pdf";
             document.Save(filename);
-            System.Diagnostics.Process.Start(filename);
+            //System.Diagnostics.Process.Start(filename);
 
             Console.ReadLine();
         }
@@ -256,8 +256,15 @@ namespace MergePDF
 
             gfx.DrawString("NIS:  " + (long.Parse(nis)).ToString(), fontCourierBold15, XBrushes.Black, 410, 90);
             gfx.DrawString(nombre, fontCourierBold14, XBrushes.Black, 25, 92);
-            gfx.DrawString(domiReal, fontCourierBold14, XBrushes.Black, 25, 105);
-            gfx.DrawString(postal, fontCourierBold14, XBrushes.Black, 25, 118);
+            if (domiReal == postal)
+            {
+                gfx.DrawString(domiReal, fontCourierBold14, XBrushes.Black, 25, 105);
+            }
+            else
+            {
+                gfx.DrawString(domiReal, fontCourierBold14, XBrushes.Black, 25, 105);
+                gfx.DrawString(postal, fontCourierBold14, XBrushes.Black, 25, 118);
+            }
             gfx.DrawString(localidad, fontCourierBold14, XBrushes.Black, 25, 131);
             gfx.DrawString("Cond.Iva:" + condiva, fontCourierBold7, XBrushes.Black, 25, 142);
             gfx.DrawString("CUIT: " + cuit, fontCourierBold7, XBrushes.Black, 155, 142);
@@ -339,8 +346,15 @@ namespace MergePDF
             posy = 536;
 
             gfx.DrawString(nombre, fontCourierBold13, XBrushes.Black, 25, posy);
-            gfx.DrawString(domiReal, fontCourierBold13, XBrushes.Black, 25, posy += 10);
-            gfx.DrawString(postal, fontCourierBold13, XBrushes.Black, 25, posy += 10);
+            if(domiReal == postal)
+            {
+                gfx.DrawString(domiReal, fontCourierBold13, XBrushes.Black, 25, posy += 10);
+            }
+            else
+            {
+                gfx.DrawString(domiReal, fontCourierBold13, XBrushes.Black, 25, posy += 10);
+                gfx.DrawString(postal, fontCourierBold13, XBrushes.Black, 25, posy += 10);
+            }
             gfx.DrawString(localidad, fontCourierBold13, XBrushes.Black, 25, posy += 10);
             gfx.DrawString("Cond.Iva:" + condiva, fontCourierBold7, XBrushes.Black, 25, posy += 7);
             gfx.DrawString("CUIT: " + cuit, fontCourierBold7, XBrushes.Black, 155, posy);
