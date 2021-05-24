@@ -19,12 +19,12 @@ namespace MergePDF
         static void Main(string[] args)
         {
             
-            //string stdIn = "";
-            //foreach (string value in args) stdIn = value;
-           // string ruta = stdIn.Substring(0,2);
-            //string secuencia = stdIn.Substring(2,8);
-            string ruta = "02";
-           string secuencia = "0";
+            string stdIn = "";
+            foreach (string value in args) stdIn += value;
+            string ruta = stdIn.Substring(0,2);
+            string secuencia = stdIn.Substring(2,8);
+            //string ruta = "02";
+            //string secuencia = "0";
             bool isNoventaYOcho;
 
             //ruta = "98";
@@ -70,8 +70,8 @@ namespace MergePDF
             document.Info.Title = "Cooperativa Electrica Colón - Buenos Aires";
 
 
-
-            if(secuencia == "0")
+            //TODO si la secuencia esta mal en vez de explotar porque no encuentra nada hay que manejar el caso.
+            if(int.Parse(secuencia).ToString() == "0")
             {
                 foreach(string pagina in paginasDeRuta.Values)
                 {
@@ -112,9 +112,17 @@ namespace MergePDF
             process.StartInfo.FileName = cRun;
             process.StartInfo.Arguments = arguments;
             process.Start();
+            Console.WriteLine("Se ejecuto sarasa");
             process.WaitForExit();
             File.Delete(filename);
             
+
+        }
+
+        static void testImpresion()
+        {
+            PrintDocument test = new System.Drawing.Printing.PrintDocument();
+
 
         }
 
