@@ -76,6 +76,7 @@ namespace MergePDF
                 foreach(string pagina in paginasDeRuta.Values)
                 {
                     pdfGenerator(pagina, document);
+                    Console.WriteLine("Procesando: " + pagina.Substring(0, 8) + "_" + pagina.Substring(661, 10) + ".pdf");
                 }
             }
             else
@@ -87,7 +88,11 @@ namespace MergePDF
                     {
                         band = true;
                     }
-                    if (band) pdfGenerator(pagina.Value, document);
+                    if (band)
+                    {
+                        pdfGenerator(pagina.Value, document);
+                        Console.WriteLine("Procesando: " + pagina.Key.Substring(0, 8) + "_" + pagina.Key.Substring(661, 10) + ".pdf");
+                    }
                 }
             }
 
@@ -109,6 +114,7 @@ namespace MergePDF
             process.Start();
             Thread.Sleep(1000);
             File.Delete(filename);
+            
 
         }
 
