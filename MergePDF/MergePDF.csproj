@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{32533458-4BE2-4966-B4CA-24E45CAF20E9}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Crc</RootNamespace>
-    <AssemblyName>Crc</AssemblyName>
+    <RootNamespace>mergePDF</RootNamespace>
+    <AssemblyName>mergePDF</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

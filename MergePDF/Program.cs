@@ -112,7 +112,7 @@ namespace MergePDF
             process.StartInfo.FileName = cRun;
             process.StartInfo.Arguments = arguments;
             process.Start();
-            Thread.Sleep(1000);
+            process.WaitForExit();
             File.Delete(filename);
             
 
