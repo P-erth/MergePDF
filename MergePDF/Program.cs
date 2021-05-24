@@ -88,7 +88,11 @@ namespace MergePDF
 
             document.Options.FlateEncodeMode = PdfFlateEncodeMode.BestCompression;
             string filename = "PdfPrueba.pdf";
+
             document.Save(filename);
+
+
+           // File.Delete(filename);
             //System.Diagnostics.Process.Start(filename);
 
             Console.ReadLine();
