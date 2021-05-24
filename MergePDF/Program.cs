@@ -9,6 +9,7 @@ using System.Drawing;
 using ZXing;
 using System.Drawing.Printing;
 using System.Diagnostics;
+using System.Threading;
 
 namespace MergePDF
 {
@@ -30,12 +31,14 @@ namespace MergePDF
             var path = "";
             if (ruta == "98")
             {
-                path = @"C:\Users\farins-win\source\repos\MergePDF\MergePDF\Output\ppdd-t2.txt";
+                //path = @"C:\Users\farins-win\source\repos\MergePDF\MergePDF\Output\ppdd-t2.txt";
+                path = @"I:\_pdf_col\ppdd-t2.txt";
                 isNoventaYOcho = true;
             }
             else
             {
-                path = @"C:\Users\farins-win\source\repos\MergePDF\MergePDF\Output\ppdd.txt";
+                //path = @"C:\Users\farins-win\source\repos\MergePDF\MergePDF\Output\ppdd.txt";
+                path = @"I:\_pdf_col\ppdd.txt";
                 isNoventaYOcho = false;
             }
 
@@ -97,12 +100,16 @@ namespace MergePDF
             // File.Delete(filename);
             //System.Diagnostics.Process.Start(filename);
             string cPrinter = GetDefaultPrinter();
-            string cRun = System.AppDomain.CurrentDomain.BaseDirectory;
-            string asd = cRun + "SumatraPDF.exe -print-to \"" + cPrinter + "\" " + " -print-settings \"" + "1x" + "\" " + " " + filename;
-            Console.WriteLine(asd);
-            Process.Start(asd);
+            string cRun = "SumatraPDF.exe";
+            string arguments = " -print-to \"" + cPrinter + "\" " + " -print-settings \"" + "1x" + "\" " + filename;
 
-            Console.WriteLine();
+            Process process = new Process();
+            process.StartInfo.FileName = cRun;
+            process.StartInfo.Arguments = arguments;
+            process.Start();
+            Thread.Sleep(1000);
+            File.Delete(filename);
+
         }
 
 
