@@ -7,6 +7,8 @@ using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
 using System.Drawing;
 using ZXing;
+using System.Drawing.Printing;
+using System.Diagnostics;
 
 namespace MergePDF
 {
@@ -16,24 +18,24 @@ namespace MergePDF
         static void Main(string[] args)
         {
             
-            string stdIn = "";
-            foreach (string value in args) stdIn = value;
-            string ruta = stdIn.Substring(0,2);
-            string secuencia = stdIn.Substring(2,8);
-           //ruta = "02";
-           // secuencia = "0";
+            //string stdIn = "";
+            //foreach (string value in args) stdIn = value;
+           // string ruta = stdIn.Substring(0,2);
+            //string secuencia = stdIn.Substring(2,8);
+            string ruta = "02";
+           string secuencia = "0";
             bool isNoventaYOcho;
 
-            ruta = "98";
+            //ruta = "98";
             var path = "";
             if (ruta == "98")
             {
-                path = @"I:/_pdf_col/ppdd-t2.txt";
+                path = @"C:\Users\farins-win\source\repos\MergePDF\MergePDF\Output\ppdd-t2.txt";
                 isNoventaYOcho = true;
             }
             else
             {
-                path = @"I:/_pdf_col/ppdd.txt";
+                path = @"C:\Users\farins-win\source\repos\MergePDF\MergePDF\Output\ppdd.txt";
                 isNoventaYOcho = false;
             }
 
@@ -92,10 +94,28 @@ namespace MergePDF
             document.Save(filename);
 
 
-           // File.Delete(filename);
+            // File.Delete(filename);
             //System.Diagnostics.Process.Start(filename);
+            string cPrinter = GetDefaultPrinter();
+            string cRun = System.AppDomain.CurrentDomain.BaseDirectory;
+            string asd = cRun + "SumatraPDF.exe -print-to \"" + cPrinter + "\" " + " -print-settings \"" + "1x" + "\" " + " " + filename;
+            Console.WriteLine(asd);
+            Process.Start(asd);
 
-            Console.ReadLine();
+            Console.WriteLine();
+        }
+
+
+        static string GetDefaultPrinter()
+        {
+            PrinterSettings settings = new PrinterSettings();
+            foreach (string printer in PrinterSettings.InstalledPrinters)
+            {
+                settings.PrinterName = printer;
+                if (settings.IsDefaultPrinter)
+                    return printer;
+            }
+            return string.Empty;
         }
 
         private static void pdfGenerator(string pagina, PdfDocument document)
