@@ -91,11 +91,11 @@ namespace MergePDF
                     if (band)
                     {
                         pdfGenerator(pagina.Value, document);
-                        Console.WriteLine("Procesando: " + pagina.Key.Substring(0, 8) + "_" + pagina.Key.Substring(661, 10) + ".pdf");
+                        Console.WriteLine("Procesando: " + pagina.Value.Substring(0, 8) + "_" + pagina.Value.Substring(661, 10) + ".pdf");
                     }
                 }
             }
-
+            
             document.Options.FlateEncodeMode = PdfFlateEncodeMode.BestCompression;
             string filename = "PdfPrueba.pdf";
 
@@ -103,18 +103,19 @@ namespace MergePDF
 
 
             // File.Delete(filename);
-            //System.Diagnostics.Process.Start(filename);
+            System.Diagnostics.Process.Start(filename);
             string cPrinter = GetDefaultPrinter();
             string cRun = "SumatraPDF.exe";
             string arguments = " -print-to \"" + cPrinter + "\" " + " -print-settings \"" + "1x" + "\" " + filename;
 
-            Process process = new Process();
-            process.StartInfo.FileName = cRun;
-            process.StartInfo.Arguments = arguments;
-            process.Start();
-            Console.WriteLine("Se ejecuto sarasa");
-            process.WaitForExit();
-            File.Delete(filename);
+           //Process process = new Process();
+           // process.StartInfo.FileName = cRun;
+           // process.StartInfo.Arguments = arguments;
+            //process.Start();
+            //Console.WriteLine("Se ejecuto sarasa");
+            //process.WaitForExit();
+            //Thread.Sleep(500);
+            //File.Delete(filename);
             
 
         }
@@ -319,7 +320,7 @@ namespace MergePDF
             int posy = 142;
             if ((cbu == "0000000000000000000000") || (cbu == "                      ") || (cbu.Trim() == ""))
             {
-                gfx.DrawString("CODIGO DE PAGO ELECTRONICO: " + (long.Parse(nis)).ToString(), fontCourierBold10, XBrushes.Black, 305, 150);
+                gfx.DrawString("CODIGO DE PAGO ELECTRONICO: " + nis, fontCourierBold10, XBrushes.Black, 305, 150);
             }
             else
             {
@@ -407,7 +408,7 @@ namespace MergePDF
             posy += 8;
             if ((cbu == "0000000000000000000000") || (cbu == "                      ") || (cbu.Trim() == ""))
             {
-                gfx.DrawString("CODIGO DE PAGO ELECTRONICO: " + (long.Parse(nis)).ToString(), fontCourierBold10, XBrushes.Black, 305, posy);
+                gfx.DrawString("CODIGO DE PAGO ELECTRONICO: " + nis, fontCourierBold10, XBrushes.Black, 305, posy);
             }
             else
             {
