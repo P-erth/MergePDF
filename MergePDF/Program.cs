@@ -75,8 +75,15 @@ namespace MergePDF
             {
                 foreach(string pagina in paginasDeRuta.Values)
                 {
+                    if (ruta == "98")
+                    {
+                        //TODO
+                    }
+                    else
+                    {
                     pdfGenerator(pagina, document);
                     Console.WriteLine("Procesando: " + pagina.Substring(0, 8) + "_" + pagina.Substring(661, 10) + ".pdf");
+                    }
                 }
             }
             else
@@ -90,8 +97,15 @@ namespace MergePDF
                     }
                     if (band)
                     {
+                        if(ruta == "98")
+                        {
+                            //TODO
+                        }
+                        else
+                        {
                         pdfGenerator(pagina.Value, document);
                         Console.WriteLine("Procesando: " + pagina.Value.Substring(0, 8) + "_" + pagina.Value.Substring(661, 10) + ".pdf");
+                        }
                     }
                 }
             }
