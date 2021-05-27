@@ -15,7 +15,16 @@ namespace MergePDF
 {
     class Program
     {
-
+        // Declaracion de fuentes
+        public static XFont fontCourierBold15 = new XFont("Courier New", 15, XFontStyle.Bold);
+        public static XFont fontCourierBold14 = new XFont("Courier New", 14, XFontStyle.Bold);
+        public static XFont fontCourierBold13 = new XFont("Courier New", 13, XFontStyle.Bold);
+        public static XFont fontCourierBold7 = new XFont("Courier New", 7, XFontStyle.Bold);
+        public static XFont fontCourier7 = new XFont("Courier New", 7, XFontStyle.Regular);
+        public static XFont fontCourier6 = new XFont("Courier New", 6, XFontStyle.Regular);
+        public static XFont fontCourierBold10 = new XFont("Courier New", 10, XFontStyle.Bold);
+        public static XFont fontCourierBold9 = new XFont("Courier New", 9, XFontStyle.Bold);
+        /////////////////////////
         static void Main(string[] args)
         {
             
@@ -240,6 +249,15 @@ namespace MergePDF
             String totControl = pagina.Substring(pivote += 50, 8);
             String total = int.Parse(pagina.Substring(pivote += 8, 10)).ToString() + "." + pagina.Substring(pivote += 10, 2);
             Console.WriteLine("hasta aca hemos llegado");
+
+
+
+            ///desde aca se dibujan los textos
+            int posy;
+            posy = 185;
+            //cuerpo
+            foreach (string cuerpo in cuerpos) gfx.DrawString(cuerpo, fontCourier7, XBrushes.Black, 243, posy += 7);
+            posy = 183;
         }
 
         private static void pdfGenerator(string pagina, PdfDocument document)
@@ -391,15 +409,7 @@ namespace MergePDF
             //////////////////////////////////////////////////////////
             DrawQR(gfx, qr1, qr2);
             DrawBarCode(gfx, cod1, cod2);
-            // Declaracion de fuentes
-            XFont fontCourierBold15 = new XFont("Courier New", 15, XFontStyle.Bold);
-            XFont fontCourierBold14 = new XFont("Courier New", 14, XFontStyle.Bold);
-            XFont fontCourierBold13 = new XFont("Courier New", 13, XFontStyle.Bold);
-            XFont fontCourierBold7 = new XFont("Courier New", 7, XFontStyle.Bold);
-            XFont fontCourier7 = new XFont("Courier New", 7, XFontStyle.Regular);
-            XFont fontCourier6 = new XFont("Courier New", 6, XFontStyle.Regular);
-            XFont fontCourierBold10 = new XFont("Courier New", 10, XFontStyle.Bold);
-            XFont fontCourierBold9 = new XFont("Courier New", 9, XFontStyle.Bold);
+            
             ///////////////////////////HOJA1//////////////////////////
 
             gfx.DrawString("NIS:  " + (long.Parse(nis)).ToString(), fontCourierBold15, XBrushes.Black, 410, 90);
