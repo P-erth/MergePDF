@@ -572,8 +572,8 @@ namespace MergePDF
                 gfx.DrawString(postal, fontCourierBold13, XBrushes.Black, 25, posy += 10);
             }
             gfx.DrawString(localidad, fontCourierBold13, XBrushes.Black, 25, posy += 10);
-            gfx.DrawString("Cond.Iva:" + condiva, fontCourierBold7, XBrushes.Black, 25, posy += 7);
-            gfx.DrawString("CUIT: " + cuit, fontCourierBold7, XBrushes.Black, 155, posy);
+            gfx.DrawString("Cond.Iva:" + condiva, fontCourierBold7, XBrushes.Black, 25, (posy += 7) + 10);
+            gfx.DrawString("CUIT: " + cuit, fontCourierBold7, XBrushes.Black, 155, posy + 10);
             gfx.DrawString("*" + cod2 + "*", fontCourier6, XBrushes.Black, 70, 599);
             posy += 8;
             if ((cbu == "0000000000000000000000") || (cbu == "                      ") || (cbu.Trim() == ""))
