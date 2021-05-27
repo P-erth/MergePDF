@@ -98,8 +98,9 @@ namespace MergePDF
                 {
                     if (ruta == "98")
                     {
-                        //TODO
-                        Console.WriteLine("ENtro aca");
+                        Console.WriteLine("mama");
+                        pdfGeneratorGrandesConsumos(pag, document);
+                        Console.WriteLine("Procesando: " + pag.Substring(0, 8) + "_" + pag.Substring(278, 10) + ".pdf");
                     }
                     else
                     {
@@ -121,7 +122,9 @@ namespace MergePDF
                     {
                         if(ruta == "98")
                         {
-                            //TODO
+                            Console.WriteLine("mama");
+                            pdfGeneratorGrandesConsumos(pag2.Value, document);
+                            Console.WriteLine("Procesando: " + pag2.Value.Substring(0, 8) + "_" + pag2.Value.Substring(278,10) + ".pdf");
                         }
                         else
                         {
@@ -174,6 +177,65 @@ namespace MergePDF
                     return printer;
             }
             return string.Empty;
+        }
+
+        private static void pdfGeneratorGrandesConsumos(string pagina, PdfDocument document)
+        {
+            Console.WriteLine("Miaaaaaaaaaaaami");
+            int pivote = 0;
+            PdfPage page = document.AddPage();
+            page.Size = PdfSharp.PageSize.A4;
+            // Get an XGraphics object for drawing
+            XGraphics gfx = XGraphics.FromPdfPage(page);
+
+            //Armado de variables
+            String nis = pagina.Substring(pivote, 8);
+            String nombre = pagina.Substring(pivote += 8, 30);
+            String domiReal = pagina.Substring(pivote += 30, 30);
+            String localidad = pagina.Substring(pivote += 30, 30);
+
+            String socio = pagina.Substring(pivote += 30, 8 );
+            String cuit = pagina.Substring(pivote += 8, 11);
+            String condiva = pagina.Substring(pivote += 11, 20);
+            String cbu = pagina.Substring(pivote += 20, 22);
+            String cuFecha = pagina.Substring(pivote += 22, 2) + "/" + pagina.Substring(pivote += 2, 2) + "/" + pagina.Substring(pivote += 2, 4);
+            String cuHora = pagina.Substring(pivote += 4, 2) + ":" + pagina.Substring(pivote += 2, 2);
+            String cuVto = pagina.Substring(pivote += 2, 2) + "/" + pagina.Substring(pivote += 2, 2) + "/" + pagina.Substring(pivote += 2, 4);
+            String lsp = pagina.Substring(pivote +=  4, 1) + "-" + pagina.Substring(pivote += 1, 4) + "-" + pagina.Substring(pivote += 4, 8);
+            String lspCod = pagina.Substring(pivote += 8, 2);
+            String cespNum = pagina.Substring(pivote += 2, 14);
+            String cespEmision = pagina.Substring(pivote += 14, 2) + "/" + pagina.Substring(pivote += 2, 2) + "/" + pagina.Substring(pivote += 2, 4);
+            String cespVto = pagina.Substring(pivote += 4, 2) + "/" + pagina.Substring(pivote += 2, 2) + "/" + pagina.Substring(pivote += 2, 4);
+            String lspTarifa = pagina.Substring(pivote += 4, 10);
+            String estadoDE = pagina.Substring(pivote += 10, 10);
+            String lspEstadoDF = pagina.Substring(pivote += 10, 2) + "/" + pagina.Substring(pivote += 2, 2) + "/" + pagina.Substring(pivote += 2, 4);
+            String estadoHE = pagina.Substring(pivote += 4, 10);
+            String lspEstadoHF = pagina.Substring(pivote += 10, 2) + "/" + pagina.Substring(pivote += 2, 2) + "/" + pagina.Substring(pivote += 2, 4);
+            String lspFactor = pagina.Substring(pivote += 4, 4);
+            String lspCoseno = pagina.Substring(pivote += 4, 4);
+            String lspSecuencia = pagina.Substring(pivote += 4, 10);
+
+            List<string> cuerpos = new List<string>();//Tabla Cuerpo
+            cuerpos.Add(pagina.Substring(pivote += 10, 50));
+            for (int i = 0; i < 39; i++) cuerpos.Add(pagina.Substring(pivote += 50, 50));
+
+            List<string> cuerpos2 = new List<string>();//Tabla Cuerpo
+            cuerpos2.Add(pagina.Substring(pivote += 50, 80));
+            for (int i = 0; i < 39; i++) cuerpos2.Add(pagina.Substring(pivote += 80, 80));
+
+
+            List<string> deudas = new List<string>();//Tabla Cuerpo
+            deudas.Add(pagina.Substring(pivote += 80, 40));
+            for (int i = 0; i < 11; i++) deudas.Add(pagina.Substring(pivote += 40, 40));
+
+            List<string> recargos = new List<string>();//Tabla Cuerpo
+            recargos.Add(pagina.Substring(pivote += 40, 50));
+            for (int i = 0; i < 11; i++) recargos.Add(pagina.Substring(pivote += 50, 50));
+
+
+            String totControl = pagina.Substring(pivote += 50, 8);
+            String total = int.Parse(pagina.Substring(pivote += 8, 10)).ToString() + "." + pagina.Substring(pivote += 10, 2);
+            Console.WriteLine("hasta aca hemos llegado");
         }
 
         private static void pdfGenerator(string pagina, PdfDocument document)
