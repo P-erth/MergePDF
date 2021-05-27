@@ -43,19 +43,41 @@ namespace MergePDF
             }
 
             string textToParse = System.IO.File.ReadAllText(path);
-            int paginas = textToParse.Length / 9010;
+            int paginas;
+            if (isNoventaYOcho)
+            {
+                 paginas = textToParse.Length / 6615;
+            }
+            else
+            {
+                 paginas = textToParse.Length / 9010;
+            }
             int cont = 0;
             SortedDictionary<string, string> paginasDeRuta = new SortedDictionary<string, string>();
 
             //Recorrer todo el txt y quedarme con las que coinciden con la ruta
+            string pagina;
+            string lspSecuencia;
+            string rutaAEvaluar;
             for (int i = 0; i < paginas; i++)
             {
+                
                 //las rutas que coinciden las agregamos dentro de una lista
-                if (i != 0) cont += 9010;
-                string pagina = textToParse.Substring(cont, 9010);
-                string lspSecuencia = pagina.Substring(661, 10);
-                string rutaAEvaluar = lspSecuencia.Substring(0, 2);
-
+                if (isNoventaYOcho)
+                {
+                    if (i != 0) cont += 6615;
+                     pagina = textToParse.Substring(cont, 6615);
+                     lspSecuencia = pagina.Substring(280, 8);
+                     rutaAEvaluar = pagina.Substring(278, 2);
+                    Console.WriteLine("Algo");
+                }
+                else
+                {
+                    if (i != 0) cont += 9010;
+                     pagina = textToParse.Substring(cont, 9010);
+                     lspSecuencia = pagina.Substring(663, 8);
+                     rutaAEvaluar = pagina.Substring(661, 2);
+                }
                 if (isNoventaYOcho)
                 {
                     paginasDeRuta.Add(lspSecuencia, pagina);
@@ -70,28 +92,28 @@ namespace MergePDF
             document.Info.Title = "Cooperativa Electrica Colón - Buenos Aires";
 
 
-            //TODO si la secuencia esta mal en vez de explotar porque no encuentra nada hay que manejar el caso.
             if(int.Parse(secuencia).ToString() == "0")
             {
-                foreach(string pagina in paginasDeRuta.Values)
+                foreach(string pag in paginasDeRuta.Values)
                 {
                     if (ruta == "98")
                     {
                         //TODO
+                        Console.WriteLine("ENtro aca");
                     }
                     else
                     {
-                    pdfGenerator(pagina, document);
-                    Console.WriteLine("Procesando: " + pagina.Substring(0, 8) + "_" + pagina.Substring(661, 10) + ".pdf");
+                    pdfGenerator(pag, document);
+                    Console.WriteLine("Procesando: " + pag.Substring(0, 8) + "_" + pag.Substring(661, 10) + ".pdf");
                     }
                 }
             }
             else
             {
                 bool band = false;
-                foreach (var pagina in paginasDeRuta)
+                foreach (var pag2 in paginasDeRuta)
                 {
-                    if(pagina.Key.Substring(2,8).Equals(secuencia))
+                    if(pag2.Key.Substring(2,8).Equals(secuencia))
                     {
                         band = true;
                     }
@@ -103,8 +125,8 @@ namespace MergePDF
                         }
                         else
                         {
-                        pdfGenerator(pagina.Value, document);
-                        Console.WriteLine("Procesando: " + pagina.Value.Substring(0, 8) + "_" + pagina.Value.Substring(661, 10) + ".pdf");
+                        pdfGenerator(pag2.Value, document);
+                        Console.WriteLine("Procesando: " + pag2.Value.Substring(0, 8) + "_" + pag2.Value.Substring(661, 10) + ".pdf");
                         }
                     }
                 }
