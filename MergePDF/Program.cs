@@ -181,12 +181,16 @@ namespace MergePDF
 
         private static void pdfGeneratorGrandesConsumos(string pagina, PdfDocument document)
         {
-            Console.WriteLine("Miaaaaaaaaaaaami");
+        
+
             int pivote = 0;
             PdfPage page = document.AddPage();
             page.Size = PdfSharp.PageSize.A4;
+            
             // Get an XGraphics object for drawing
             XGraphics gfx = XGraphics.FromPdfPage(page);
+            XImage img = XImage.FromFile("templateGrandes.jpg");
+            gfx.DrawImage(img, 0, 0);
 
             //Armado de variables
             String nis = pagina.Substring(pivote, 8);
