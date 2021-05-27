@@ -79,7 +79,6 @@ namespace MergePDF
                      pagina = textToParse.Substring(cont, 6615);
                      lspSecuencia = pagina.Substring(280, 8);
                      rutaAEvaluar = pagina.Substring(278, 2);
-                    Console.WriteLine("Algo");
                 }
                 else
                 {
@@ -108,7 +107,6 @@ namespace MergePDF
                 {
                     if (ruta == "98")
                     {
-                        Console.WriteLine("mama");
                         pdfGeneratorGrandesConsumos(pag, document);
                         Console.WriteLine("Procesando: " + pag.Substring(0, 8) + "_" + pag.Substring(278, 10) + ".pdf");
                     }
@@ -132,7 +130,6 @@ namespace MergePDF
                     {
                         if(ruta == "98")
                         {
-                            Console.WriteLine("mama");
                             pdfGeneratorGrandesConsumos(pag2.Value, document);
                             Console.WriteLine("Procesando: " + pag2.Value.Substring(0, 8) + "_" + pag2.Value.Substring(278,10) + ".pdf");
                         }
@@ -152,19 +149,16 @@ namespace MergePDF
 
 
             // File.Delete(filename);
-            System.Diagnostics.Process.Start(filename);
+           // System.Diagnostics.Process.Start(filename);
             string cPrinter = GetDefaultPrinter();
             string cRun = "SumatraPDF.exe";
             string arguments = " -print-to \"" + cPrinter + "\" " + " -print-settings \"" + "1x" + "\" " + filename;
-
-           //Process process = new Process();
-           // process.StartInfo.FileName = cRun;
-           // process.StartInfo.Arguments = arguments;
-            //process.Start();
-            //Console.WriteLine("Se ejecuto sarasa");
-            //process.WaitForExit();
-            //Thread.Sleep(500);
-            //File.Delete(filename);
+            Process process = new Process();
+            process.StartInfo.FileName = cRun;
+            process.StartInfo.Arguments = arguments;
+            process.Start();
+            process.WaitForExit();
+            File.Delete(filename);
             
 
         }
@@ -587,7 +581,7 @@ namespace MergePDF
                 gfx.DrawString("número: " + cbu + " por lo tanto recomendamos verificar para tal", fontCourierBold7, XBrushes.Black, 245, posy += 7);
                 gfx.DrawString("fecha tener el saldo disponible en su cuenta bancaria", fontCourierBold7, XBrushes.Black, 245, posy += 7);
             }
-            if (lspSocial == "1") gfx.DrawString("**TARIFA SOCIAL**", fontCourierBold9, XBrushes.Black, 355, posy += 16);
+            if (lspSocial == "1") gfx.DrawString("**TARIFA SOCIAL**", fontCourierBold9, XBrushes.Black, 355, 597);
             posy = 470;
             gfx.DrawString("Liq. Serv. Públicos", fontCourierBold7, XBrushes.Black, 400, posy);
             gfx.DrawString(lsp2, fontCourierBold7, XBrushes.Black, 500, posy);
