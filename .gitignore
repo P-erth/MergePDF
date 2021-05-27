@@ -4,7 +4,7 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 Crc/Output/Historico/
-Crc/Output/Crc.exe
+Crc/Output/mergePDF.exe
 Crc/Output/HelloWorld.pdf
 Crc/Output/ppdd.txt
 # User-specific files
