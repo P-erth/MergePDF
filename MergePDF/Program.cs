@@ -17,6 +17,7 @@ namespace MergePDF
     {
         // Declaracion de fuentes
         public static XFont fontCourierBold15 = new XFont("Courier New", 15, XFontStyle.Bold);
+        public static XFont fontCourierBold20 = new XFont("Courier New", 20, XFontStyle.Bold);
         public static XFont fontCourierBold14 = new XFont("Courier New", 14, XFontStyle.Bold);
         public static XFont fontCourierBold13 = new XFont("Courier New", 13, XFontStyle.Bold);
         public static XFont fontCourierBold7 = new XFont("Courier New", 7, XFontStyle.Bold);
@@ -33,6 +34,8 @@ namespace MergePDF
             foreach (string value in args) stdIn += value;
             string ruta = stdIn.Substring(0,2);
             string secuencia = stdIn.Substring(2,8);
+            string cantidad = stdIn.Substring(12, 4);
+            string ultimoArchivo = stdIn.Substring(16, 23);
             //string ruta = "02";
             //string secuencia = "0";
             bool isNoventaYOcho;
@@ -100,8 +103,14 @@ namespace MergePDF
             PdfDocument document = new PdfDocument();
             document.Info.Title = "Cooperativa Electrica Colón - Buenos Aires";
 
+            PdfPage page = document.AddPage();
+            page.Size = PdfSharp.PageSize.A4;
+            XGraphics gfxPrimerPagina = XGraphics.FromPdfPage(page);
+            gfxPrimerPagina.DrawString("RUTA NUM: " + ruta, fontCourierBold20, XBrushes.Black, 20, 30);
+            gfxPrimerPagina.DrawString("CANTIDAD DE FACTURAS: " + cantidad, fontCourierBold20, XBrushes.Black, 20, 55);
+            gfxPrimerPagina.DrawString("ULTIMA FACTURA: " + ultimoArchivo, fontCourierBold20, XBrushes.Black, 20, 80);
 
-            if(int.Parse(secuencia).ToString() == "0")
+            if (int.Parse(secuencia).ToString() == "0")
             {
                 foreach(string pag in paginasDeRuta.Values)
                 {
@@ -149,15 +158,17 @@ namespace MergePDF
 
 
             // File.Delete(filename);
-           // System.Diagnostics.Process.Start(filename);
+            //System.Diagnostics.Process.Start(filename);
             string cPrinter = GetDefaultPrinter();
-            string cRun = "SumatraPDF.exe";
+            string cRun = "PDFlite.exe";
             string arguments = " -print-to \"" + cPrinter + "\" " + " -print-settings \"" + "1x" + "\" " + filename;
+            string argument = "-print-to-default " + filename;
             Process process = new Process();
             process.StartInfo.FileName = cRun;
-            process.StartInfo.Arguments = arguments;
+            process.StartInfo.Arguments = argument;
             process.Start();
             process.WaitForExit();
+            
             File.Delete(filename);
             
 
