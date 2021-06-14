@@ -10,6 +10,13 @@ using ZXing;
 using System.Drawing.Printing;
 using System.Diagnostics;
 using System.Threading;
+using System.Management;
+
+/*
+ * Cositas a hacer:
+ * Manejo de excepciones
+ * Cuando imprimis una ruta desde una secuencia en particular, tiene que imprimir desde esa secuencia en adelante.
+ */
 
 namespace MergePDF
 {
@@ -170,22 +177,41 @@ namespace MergePDF
 
             document.Save(filename);
 
-
             // File.Delete(filename);
             System.Diagnostics.Process.Start(filename);
             string cPrinter = GetDefaultPrinter();
-            string cRun = "PDFlite.exe";
-            string arguments = " -print-to \"" + cPrinter + "\" " + " -print-settings \"" + "1x" + "\" " + filename;
+            string cRun = "SumatraPDF.exe";
+            string arguments = " -print-to \"" + cPrinter + "\" " + " -print-settings \"" + "1x" + "\" " + "-silent " + filename;
             string argument = "-print-to-default " + filename;
             Process process = new Process();
             process.StartInfo.FileName = cRun;
             process.StartInfo.Arguments = argument;
-            //process.Start();
+            process.Start();
             //Console.ReadLine();
             //process.WaitForExit();
             //File.Delete(filename);
-            
 
+
+            var he = process.HasExited;
+            Process[] procs = Process.GetProcesses();
+            //process.WaitForExit();
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher("\\\\localhost",
+            "SELECT * " +
+            "FROM Win32_Process "
+            + "WHERE ParentProcessId=" + process.Id
+            );
+            ManagementObjectCollection collection = searcher.Get();
+
+            foreach (var item in collection)
+            {
+                UInt32 childProcessId = (UInt32)item["ProcessId"];
+                if ((int)childProcessId != Process.GetCurrentProcess().Id)
+                {
+                    Process childProcess = Process.GetProcessById((int)childProcessId);
+                    childProcess.WaitForExit();
+                }
+            }
+            Console.WriteLine("finish");
         }
 
         static void testImpresion()
@@ -378,13 +404,13 @@ namespace MergePDF
             {
                 mesVto = "01";
                 int año = Int32.Parse(añoVto);
-                añoVto = año.ToString();
+//                añoVto = año.ToString();
             }
             else
             {
                 int mes = Int32.Parse(mesVto);
-                mes++;
-                mesVto = mes.ToString();
+               // mes++;
+                mesVto = "0"+mes.ToString();
             }
             //
             String proxVto = diaVto + "/" + mesVto + "/" + añoVto;
@@ -537,7 +563,7 @@ namespace MergePDF
                 posy = 276;
                 //estadisticos
                 foreach (string estadistico in estadisticos) gfx.DrawString(estadistico, fontCourierBold6, XBrushes.Black, 43, posy += 7);
-                gfx.DrawString("Promedio : " + promedio, fontCourier6, XBrushes.Black, 105, posy += 7);
+                gfx.DrawString("Promedio : " + promedio, fontCourierBold6, XBrushes.Black, 105, posy += 7);
                 //recargos
                 posy = 350;
                 foreach (string recargo in recargos) gfx.DrawString(recargo, fontCourier6, XBrushes.Black, 30, posy += 7);
