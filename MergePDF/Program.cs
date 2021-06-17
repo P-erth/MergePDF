@@ -37,11 +37,11 @@ namespace MergePDF
         /////////////////////////
         static void Main(string[] args)
         {
-            
+
             string stdIn = "";
             foreach (string value in args) stdIn += value;
-            string ruta = stdIn.Substring(0,2);
-            string secuencia = stdIn.Substring(2,8);
+            string ruta = stdIn.Substring(0, 2);
+            string secuencia = stdIn.Substring(2, 8);
             string cantidad = stdIn.Substring(12, 4);
             string ultimoArchivo = stdIn.Substring(16, 23);
             //string ruta = "02";
@@ -67,11 +67,11 @@ namespace MergePDF
             int paginas;
             if (isNoventaYOcho)
             {
-                 paginas = textToParse.Length / 6615;
+                paginas = textToParse.Length / 6615;
             }
             else
             {
-                 paginas = textToParse.Length / 9010;
+                paginas = textToParse.Length / 9010;
             }
             int cont = 0;
             SortedDictionary<string, string> paginasDeRuta = new SortedDictionary<string, string>();
@@ -80,45 +80,44 @@ namespace MergePDF
             string pagina;
             string lspSecuencia;
             string rutaAEvaluar;
-            for (int i = 0; i < paginas ; i++)
+            for (int i = 0; i < paginas; i++)
             {
-                
+
                 //las rutas que coinciden las agregamos dentro de una lista
                 if (isNoventaYOcho)
                 {
                     if (i != 0) cont += 6615;
-                     pagina = textToParse.Substring(cont, 6615);
-                     lspSecuencia = pagina.Substring(280, 8);
-                     rutaAEvaluar = pagina.Substring(278, 2);
+                    pagina = textToParse.Substring(cont, 6615);
+                    lspSecuencia = pagina.Substring(280, 8);
+                    rutaAEvaluar = pagina.Substring(278, 2);
                 }
                 else
                 {
                     if (i != 0) cont += 9010;
-                     pagina = textToParse.Substring(cont, 9010);
-                     lspSecuencia = pagina.Substring(663, 8);
-                     rutaAEvaluar = pagina.Substring(661, 2);
+                    pagina = textToParse.Substring(cont, 9010);
+                    lspSecuencia = pagina.Substring(663, 8);
+                    rutaAEvaluar = pagina.Substring(661, 2);
                 }
-                if (isNoventaYOcho)
+                if (isNoventaYOcho && (secuencia == "00000000" || int.Parse(lspSecuencia) >= int.Parse(secuencia)))
                 {
                     paginasDeRuta.Add(lspSecuencia, pagina);
                 }
                 else
                 {
-                    if (String.Compare(rutaAEvaluar, ruta) == 0)
+                    if (String.Compare(rutaAEvaluar, ruta) == 0 && (secuencia == "00000000" || int.Parse(lspSecuencia) >= int.Parse(secuencia)))
                     {
+                        //Si el key se repite en el dictionary
                         if (paginasDeRuta.ContainsKey(lspSecuencia))
                         {
-                            paginasDeRuta.Add(lspSecuencia + (repiteKey++) , pagina);
+                            paginasDeRuta.Add(lspSecuencia + (repiteKey++), pagina);
                         }
                         else
-                        { 
+                        {
                             paginasDeRuta.Add(lspSecuencia, pagina);
                         }
                     }
                 }
             }
-
-
 
             //Creamos un documento unico
             PdfDocument document = new PdfDocument();
@@ -131,54 +130,27 @@ namespace MergePDF
             gfxPrimerPagina.DrawString("CANTIDAD DE FACTURAS: " + cantidad, fontCourierBold20, XBrushes.Black, 20, 55);
             gfxPrimerPagina.DrawString("ULTIMA FACTURA: " + ultimoArchivo, fontCourierBold20, XBrushes.Black, 20, 80);
 
-            if (int.Parse(secuencia).ToString() == "0")
+            foreach (string pag in paginasDeRuta.Values)
             {
-                foreach(string pag in paginasDeRuta.Values)
+                if (ruta == "98")
                 {
-                    if (ruta == "98")
-                    {
-                        pdfGeneratorGrandesConsumos(pag, document);
-                        Console.WriteLine("Procesando: " + pag.Substring(0, 8) + "_" + pag.Substring(278, 10) + ".pdf");
-                    }
-                    else
-                    {
+                    pdfGeneratorGrandesConsumos(pag, document);
+                    Console.WriteLine("Procesando: " + pag.Substring(0, 8) + "_" + pag.Substring(278, 10) + ".pdf");
+                }
+                else
+                {
                     pdfGenerator(pag, document);
                     Console.WriteLine("Procesando: " + pag.Substring(0, 8) + "_" + pag.Substring(661, 10) + ".pdf");
-                    }
                 }
             }
-            else
-            {
-                bool band = false;
-                foreach (var pag2 in paginasDeRuta)
-                {
-                    if(pag2.Key.Substring(2,8).Equals(secuencia))
-                    {
-                        band = true;
-                    }
-                    if (band)
-                    {
-                        if(ruta == "98")
-                        {
-                            pdfGeneratorGrandesConsumos(pag2.Value, document);
-                            Console.WriteLine("Procesando: " + pag2.Value.Substring(0, 8) + "_" + pag2.Value.Substring(278,10) + ".pdf");
-                        }
-                        else
-                        {
-                        pdfGenerator(pag2.Value, document);
-                        Console.WriteLine("Procesando: " + pag2.Value.Substring(0, 8) + "_" + pag2.Value.Substring(661, 10) + ".pdf");
-                        }
-                    }
-                }
-            }
-            
+
             document.Options.FlateEncodeMode = PdfFlateEncodeMode.BestCompression;
             string filename = "PdfPrueba.pdf";
 
             document.Save(filename);
 
             // File.Delete(filename);
-            System.Diagnostics.Process.Start(filename);
+            //System.Diagnostics.Process.Start(filename);
             string cPrinter = GetDefaultPrinter();
             string cRun = "SumatraPDF.exe";
             string arguments = " -print-to \"" + cPrinter + "\" " + " -print-settings \"" + "1x" + "\" " + "-silent " + filename;
@@ -191,7 +163,6 @@ namespace MergePDF
             //process.WaitForExit();
             //File.Delete(filename);
 
-
             var he = process.HasExited;
             Process[] procs = Process.GetProcesses();
             //process.WaitForExit();
@@ -201,7 +172,7 @@ namespace MergePDF
             + "WHERE ParentProcessId=" + process.Id
             );
             ManagementObjectCollection collection = searcher.Get();
-
+            
             foreach (var item in collection)
             {
                 UInt32 childProcessId = (UInt32)item["ProcessId"];
@@ -213,14 +184,6 @@ namespace MergePDF
             }
             Console.WriteLine("finish");
         }
-
-        static void testImpresion()
-        {
-            PrintDocument test = new System.Drawing.Printing.PrintDocument();
-
-
-        }
-
 
         static string GetDefaultPrinter()
         {
@@ -236,12 +199,12 @@ namespace MergePDF
 
         private static void pdfGeneratorGrandesConsumos(string pagina, PdfDocument document)
         {
-        
+
 
             int pivote = 0;
             PdfPage page = document.AddPage();
             page.Size = PdfSharp.PageSize.A4;
-            
+
             // Get an XGraphics object for drawing
             XGraphics gfx = XGraphics.FromPdfPage(page);
             XImage img = XImage.FromFile("templateGrandes.jpg");
@@ -253,18 +216,19 @@ namespace MergePDF
             String domiReal = pagina.Substring(pivote += 30, 30);
             String localidad = pagina.Substring(pivote += 30, 30);
 
-            String socio = pagina.Substring(pivote += 30, 8 );
+            String socio = pagina.Substring(pivote += 30, 8);
             String cuit = pagina.Substring(pivote += 8, 11);
             String condiva = pagina.Substring(pivote += 11, 20);
             String cbu = pagina.Substring(pivote += 20, 22);
             String cuFecha = pagina.Substring(pivote += 22, 2) + "/" + pagina.Substring(pivote += 2, 2) + "/" + pagina.Substring(pivote += 2, 4);
             String cuHora = pagina.Substring(pivote += 4, 2) + ":" + pagina.Substring(pivote += 2, 2);
             String cuVto = pagina.Substring(pivote += 2, 2) + "/" + pagina.Substring(pivote += 2, 2) + "/" + pagina.Substring(pivote += 2, 4);
-            String lsp = pagina.Substring(pivote +=  4, 1) + "-" + pagina.Substring(pivote += 1, 4) + "-" + pagina.Substring(pivote += 4, 8);
+            String lsp = pagina.Substring(pivote += 4, 1) + "-" + pagina.Substring(pivote += 1, 4) + "-" + pagina.Substring(pivote += 4, 8);
             String lspCod = pagina.Substring(pivote += 8, 2);
             String cespNum = pagina.Substring(pivote += 2, 14);
             String cespEmision = pagina.Substring(pivote += 14, 2) + "/" + pagina.Substring(pivote += 2, 2) + "/" + pagina.Substring(pivote += 2, 4);
             String cespVto = pagina.Substring(pivote += 4, 2) + "/" + pagina.Substring(pivote += 2, 2) + "/" + pagina.Substring(pivote += 2, 4);
+            cespVto = DateTime.ParseExact(cespVto, "dd/MM/yyyy", null).AddMonths(1).ToString("dd/MM/yyyy");
             String lspTarifa = pagina.Substring(pivote += 4, 10);
             String estadoDE = pagina.Substring(pivote += 10, 10);
             String lspEstadoDF = pagina.Substring(pivote += 10, 2) + "/" + pagina.Substring(pivote += 2, 2) + "/" + pagina.Substring(pivote += 2, 4);
@@ -312,7 +276,7 @@ namespace MergePDF
 
 
 
-            gfx.DrawString("Numeración emitida como gran contribuyente el " + cuFecha + " a las " + cuHora , fontCourierBold7, XBrushes.Black, 20, 462);
+            gfx.DrawString("Numeración emitida como gran contribuyente el " + cuFecha + " a las " + cuHora, fontCourierBold7, XBrushes.Black, 20, 462);
             gfx.DrawString(cuVto, fontCourierBold14, XBrushes.Black, 375, 491);
             gfx.DrawString(total, fontCourierBold14, XBrushes.Black, 495, 491);
 
@@ -348,7 +312,7 @@ namespace MergePDF
             gfx.DrawString(nombre, fontCourierBold14, XBrushes.Black, 25, 92);
             if (domiReal == localidad)
             {
-                 gfx.DrawString(domiReal, fontCourierBold14, XBrushes.Black, 25, 105);
+                gfx.DrawString(domiReal, fontCourierBold14, XBrushes.Black, 25, 105);
             }
             else
             {
@@ -357,12 +321,12 @@ namespace MergePDF
             }
 
             gfx.DrawString("Cond.Iva: " + condiva, fontCourierBold7, XBrushes.Black, 25, 138);
-            if(cuit != "00000000000")
+            if (cuit != "00000000000")
             {
-            gfx.DrawString("CUIT: " + cuit, fontCourierBold7, XBrushes.Black, 155, 138);
+                gfx.DrawString("CUIT: " + cuit, fontCourierBold7, XBrushes.Black, 155, 138);
             }
             DrawBarCodeGrandesConsumos(gfx, cod);
-            gfx.DrawString("*" + cod + "*" , fontCourier6, XBrushes.Black, 70, 163);
+            gfx.DrawString("*" + cod + "*", fontCourier6, XBrushes.Black, 70, 163);
 
         }
 
@@ -404,13 +368,13 @@ namespace MergePDF
             {
                 mesVto = "01";
                 int año = Int32.Parse(añoVto);
-//                añoVto = año.ToString();
+                //                añoVto = año.ToString();
             }
             else
             {
                 int mes = Int32.Parse(mesVto);
-               // mes++;
-                mesVto = "0"+mes.ToString();
+                // mes++;
+                mesVto = "0" + mes.ToString();
             }
             //
             String proxVto = diaVto + "/" + mesVto + "/" + añoVto;
@@ -422,6 +386,7 @@ namespace MergePDF
             String cesp = pagina.Substring(pivote += 2, 14);
             String cespEmis = pagina.Substring(pivote += 14, 2) + "/" + pagina.Substring(pivote += 2, 2) + "/" + pagina.Substring(pivote += 2, 4);
             String cespVto = pagina.Substring(pivote += 4, 2) + "/" + pagina.Substring(pivote += 2, 2) + "/" + pagina.Substring(pivote += 2, 4);
+            cespVto = DateTime.ParseExact(cespVto, "dd/MM/yyyy", null).AddMonths(1).ToString("dd/MM/yyyy");
             String lspTarifa = pagina.Substring(pivote += 4, 6);
             String lspSocial = pagina.Substring(pivote += 6, 1);
             String lspMedidor = pagina.Substring(pivote += 1, 10);
@@ -515,8 +480,8 @@ namespace MergePDF
             String crc2 = CalculaCRC(qr1, Encoding.UTF8);
             qr2 += crc2;
             //////////////////////////////////////////////////////////
-            DrawQR(gfx, qr1, qr2,lspParte3, lsp2Parte3);
-            DrawBarCode(gfx, cod1, cod2,lspParte3,lsp2Parte3);
+            DrawQR(gfx, qr1, qr2, lspParte3, lsp2Parte3);
+            DrawBarCode(gfx, cod1, cod2, lspParte3, lsp2Parte3);
 
             ///////////////////////////HOJA1//////////////////////////
             if (lspParte3 != "00000000")
@@ -612,72 +577,73 @@ namespace MergePDF
             }
             ////////////////////////FINHOJA1////////////////////////////////////////////
             /////////////////////////HOJA2 //////////////////////////////
-            if (lsp2Parte3 != "00000000") { 
-            
-            gfx.DrawString("NIS:  " + (long.Parse(nis)).ToString(), fontCourierBold15, XBrushes.Black, 410, 548);
-            posy = 536;
+            if (lsp2Parte3 != "00000000")
+            {
 
-            gfx.DrawString(nombre, fontCourierBold13, XBrushes.Black, 25, posy);
-            if (domiReal == postal)
-            {
-                gfx.DrawString(domiReal, fontCourierBold13, XBrushes.Black, 25, posy += 10);
-            }
-            else
-            {
-                gfx.DrawString(domiReal, fontCourierBold13, XBrushes.Black, 25, posy += 10);
-                gfx.DrawString(postal, fontCourierBold13, XBrushes.Black, 25, posy += 10);
-            }
-            gfx.DrawString(localidad, fontCourierBold13, XBrushes.Black, 25, posy += 10);
-            gfx.DrawString("Cond.Iva:" + condiva, fontCourierBold7, XBrushes.Black, 25, 573);
-            if (cuit != "00000000000")
-            {
-                gfx.DrawString("CUIT: " + cuit, fontCourierBold7, XBrushes.Black, 155, 573);
-            } 
-            gfx.DrawString("*" + cod2 + "*", fontCourier6, XBrushes.Black, 70, 599);
-            posy += 8;
-            if ((cbu == "0000000000000000000000") || (cbu == "                      ") || (cbu.Trim() == ""))
-            {
-                gfx.DrawString("CODIGO DE PAGO ELECTRONICO: " + nis, fontCourierBold10, XBrushes.Black, 305, posy);
-            }
-            else
-            {
-                posy -= 7;
-                gfx.DrawString("El importe de esta factura sera debitado a su vencimiento de acuerdo al CBU", fontCourierBold7, XBrushes.Black, 245, posy);
-                gfx.DrawString("número: " + cbu + " por lo tanto recomendamos verificar para tal", fontCourierBold7, XBrushes.Black, 245, posy += 7);
-                gfx.DrawString("fecha tener el saldo disponible en su cuenta bancaria", fontCourierBold7, XBrushes.Black, 245, posy += 7);
-            }
-            if (lspSocial == "1") gfx.DrawString("**TARIFA SOCIAL**", fontCourierBold9, XBrushes.Black, 355, 597);
-            posy = 470;
-            gfx.DrawString("Liq. Serv. Públicos", fontCourierBold7, XBrushes.Black, 400, posy);
-            gfx.DrawString(lsp2, fontCourierBold7, XBrushes.Black, 500, posy);
-            gfx.DrawString("Código Comprobante", fontCourierBold7, XBrushes.Black, 400, posy += 10);
-            gfx.DrawString(codCom, fontCourierBold7, XBrushes.Black, 555, posy);
-            gfx.DrawString("C.E.S.P. Número", fontCourierBold7, XBrushes.Black, 400, posy += 10);
-            gfx.DrawString(cesp, fontCourierBold7, XBrushes.Black, 505, posy);
-            gfx.DrawString("Vencimiento CESP", fontCourierBold7, XBrushes.Black, 400, posy += 10);
-            gfx.DrawString(cespVto, fontCourierBold7, XBrushes.Black, 522, posy);
-            gfx.DrawString("Fecha emisión", fontCourierBold7, XBrushes.Black, 400, posy += 10);
-            gfx.DrawString(cespEmis, fontCourierBold7, XBrushes.Black, 522, posy);
-            gfx.DrawString("Control de pago", fontCourierBold7, XBrushes.Black, 400, posy += 10);
-            gfx.DrawString(totControl2, fontCourierBold7, XBrushes.Black, 530, posy);
-            gfx.DrawString("Socio", fontCourierBold7, XBrushes.Black, 400, posy += 10);
-            gfx.DrawString(socio, fontCourierBold7, XBrushes.Black, 530, posy);
-            posy = 612;
-            foreach (string recargo in recargosTabla2) gfx.DrawString(recargo, fontCourierBold6, XBrushes.Black, 30, posy += 6);
-            posy = 692;
-            foreach (string sepelio in sepelios) gfx.DrawString(sepelio, fontCourierBold6, XBrushes.Black, 30, posy += 6);
+                gfx.DrawString("NIS:  " + (long.Parse(nis)).ToString(), fontCourierBold15, XBrushes.Black, 410, 548);
+                posy = 536;
 
-            gfx.DrawString(proxVto, fontCourierBold14, XBrushes.Black, 382, 824);
-            gfx.DrawString(totImporte2, fontCourierBold14, XBrushes.Black, 504, 824);
-            gfx.DrawString("Numeración enitida como gran contribuyente el " + cuFecha + " a las " + cuHora, fontCourierBold7, XBrushes.Black, 34, 827);
-            posy = 612;
-            foreach (string cuerpo in cuerposTabla2) gfx.DrawString(cuerpo, fontCourierBold7, XBrushes.Black, 242, posy += 6);
+                gfx.DrawString(nombre, fontCourierBold13, XBrushes.Black, 25, posy);
+                if (domiReal == postal)
+                {
+                    gfx.DrawString(domiReal, fontCourierBold13, XBrushes.Black, 25, posy += 10);
+                }
+                else
+                {
+                    gfx.DrawString(domiReal, fontCourierBold13, XBrushes.Black, 25, posy += 10);
+                    gfx.DrawString(postal, fontCourierBold13, XBrushes.Black, 25, posy += 10);
+                }
+                gfx.DrawString(localidad, fontCourierBold13, XBrushes.Black, 25, posy += 10);
+                gfx.DrawString("Cond.Iva:" + condiva, fontCourierBold7, XBrushes.Black, 25, 573);
+                if (cuit != "00000000000")
+                {
+                    gfx.DrawString("CUIT: " + cuit, fontCourierBold7, XBrushes.Black, 155, 573);
+                }
+                gfx.DrawString("*" + cod2 + "*", fontCourier6, XBrushes.Black, 70, 599);
+                posy += 8;
+                if ((cbu == "0000000000000000000000") || (cbu == "                      ") || (cbu.Trim() == ""))
+                {
+                    gfx.DrawString("CODIGO DE PAGO ELECTRONICO: " + nis, fontCourierBold10, XBrushes.Black, 305, posy);
+                }
+                else
+                {
+                    posy -= 7;
+                    gfx.DrawString("El importe de esta factura sera debitado a su vencimiento de acuerdo al CBU", fontCourierBold7, XBrushes.Black, 245, posy);
+                    gfx.DrawString("número: " + cbu + " por lo tanto recomendamos verificar para tal", fontCourierBold7, XBrushes.Black, 245, posy += 7);
+                    gfx.DrawString("fecha tener el saldo disponible en su cuenta bancaria", fontCourierBold7, XBrushes.Black, 245, posy += 7);
+                }
+                if (lspSocial == "1") gfx.DrawString("**TARIFA SOCIAL**", fontCourierBold9, XBrushes.Black, 355, 597);
+                posy = 470;
+                gfx.DrawString("Liq. Serv. Públicos", fontCourierBold7, XBrushes.Black, 400, posy);
+                gfx.DrawString(lsp2, fontCourierBold7, XBrushes.Black, 500, posy);
+                gfx.DrawString("Código Comprobante", fontCourierBold7, XBrushes.Black, 400, posy += 10);
+                gfx.DrawString(codCom, fontCourierBold7, XBrushes.Black, 555, posy);
+                gfx.DrawString("C.E.S.P. Número", fontCourierBold7, XBrushes.Black, 400, posy += 10);
+                gfx.DrawString(cesp, fontCourierBold7, XBrushes.Black, 505, posy);
+                gfx.DrawString("Vencimiento CESP", fontCourierBold7, XBrushes.Black, 400, posy += 10);
+                gfx.DrawString(cespVto, fontCourierBold7, XBrushes.Black, 522, posy);
+                gfx.DrawString("Fecha emisión", fontCourierBold7, XBrushes.Black, 400, posy += 10);
+                gfx.DrawString(cespEmis, fontCourierBold7, XBrushes.Black, 522, posy);
+                gfx.DrawString("Control de pago", fontCourierBold7, XBrushes.Black, 400, posy += 10);
+                gfx.DrawString(totControl2, fontCourierBold7, XBrushes.Black, 530, posy);
+                gfx.DrawString("Socio", fontCourierBold7, XBrushes.Black, 400, posy += 10);
+                gfx.DrawString(socio, fontCourierBold7, XBrushes.Black, 530, posy);
+                posy = 612;
+                foreach (string recargo in recargosTabla2) gfx.DrawString(recargo, fontCourierBold6, XBrushes.Black, 30, posy += 6);
+                posy = 692;
+                foreach (string sepelio in sepelios) gfx.DrawString(sepelio, fontCourierBold6, XBrushes.Black, 30, posy += 6);
+
+                gfx.DrawString(proxVto, fontCourierBold14, XBrushes.Black, 382, 824);
+                gfx.DrawString(totImporte2, fontCourierBold14, XBrushes.Black, 504, 824);
+                gfx.DrawString("Numeración enitida como gran contribuyente el " + cuFecha + " a las " + cuHora, fontCourierBold7, XBrushes.Black, 34, 827);
+                posy = 612;
+                foreach (string cuerpo in cuerposTabla2) gfx.DrawString(cuerpo, fontCourierBold7, XBrushes.Black, 242, posy += 6);
 
             }
             ////////////////////FINHOJA2////////////////////
         }
 
-        private static void DrawQR(XGraphics gfx, string qr1, string qr2,string lspParte3,string lsp2Parte3)
+        private static void DrawQR(XGraphics gfx, string qr1, string qr2, string lspParte3, string lsp2Parte3)
         {
             XImage img = XImage.FromFile("template.jpg");
             gfx.DrawImage(img, 0, 0);
@@ -701,9 +667,9 @@ namespace MergePDF
             bm = bcWriter.Write(qr2);
             img2 = XImage.FromGdiPlusImage((Image)bm);
             img2.Interpolate = false;
-            if (lsp2Parte3 != "00000000")gfx.DrawImage(img2, 495, 710);
+            if (lsp2Parte3 != "00000000") gfx.DrawImage(img2, 495, 710);
         }
-        private static void DrawBarCode(XGraphics gfx, string code1, string code2,string lspParte3, string lsp2Parte3)
+        private static void DrawBarCode(XGraphics gfx, string code1, string code2, string lspParte3, string lsp2Parte3)
         {
             var bcWriter = new BarcodeWriter
             {
@@ -746,7 +712,7 @@ namespace MergePDF
             XImage img = XImage.FromGdiPlusImage((Image)bm);
             img.Interpolate = false;
             gfx.DrawImage(img, 30, 142);
-            
+
         }
 
         static String CalculaCRC(String value, Encoding enc)
