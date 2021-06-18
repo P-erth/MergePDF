@@ -15,7 +15,6 @@ using System.Management;
 /*
  * Cositas a hacer:
  * Manejo de excepciones
- * Cuando imprimis una ruta desde una secuencia en particular, tiene que imprimir desde esa secuencia en adelante.
  */
 
 namespace MergePDF
@@ -42,8 +41,8 @@ namespace MergePDF
             foreach (string value in args) stdIn += value;
             string ruta = stdIn.Substring(0, 2);
             string secuencia = stdIn.Substring(2, 8);
-            string cantidad = stdIn.Substring(12, 4);
-            string ultimoArchivo = stdIn.Substring(16, 23);
+            //string cantidad = stdIn.Substring(12, 4);
+            string ultimoArchivo = "";
             //string ruta = "02";
             //string secuencia = "0";
             bool isNoventaYOcho;
@@ -80,6 +79,7 @@ namespace MergePDF
             string pagina;
             string lspSecuencia;
             string rutaAEvaluar;
+           
             for (int i = 0; i < paginas; i++)
             {
 
@@ -90,6 +90,7 @@ namespace MergePDF
                     pagina = textToParse.Substring(cont, 6615);
                     lspSecuencia = pagina.Substring(280, 8);
                     rutaAEvaluar = pagina.Substring(278, 2);
+                    
                 }
                 else
                 {
@@ -110,10 +111,12 @@ namespace MergePDF
                         if (paginasDeRuta.ContainsKey(lspSecuencia))
                         {
                             paginasDeRuta.Add(lspSecuencia + (repiteKey++), pagina);
+                            
                         }
                         else
                         {
                             paginasDeRuta.Add(lspSecuencia, pagina);
+                            
                         }
                     }
                 }
@@ -122,13 +125,11 @@ namespace MergePDF
             //Creamos un documento unico
             PdfDocument document = new PdfDocument();
             document.Info.Title = "Cooperativa Electrica Colón - Buenos Aires";
-
+            int cantidad = paginasDeRuta.Count;
             PdfPage page = document.AddPage();
             page.Size = PdfSharp.PageSize.A4;
             XGraphics gfxPrimerPagina = XGraphics.FromPdfPage(page);
-            gfxPrimerPagina.DrawString("RUTA NUM: " + ruta, fontCourierBold20, XBrushes.Black, 20, 30);
-            gfxPrimerPagina.DrawString("CANTIDAD DE FACTURAS: " + cantidad, fontCourierBold20, XBrushes.Black, 20, 55);
-            gfxPrimerPagina.DrawString("ULTIMA FACTURA: " + ultimoArchivo, fontCourierBold20, XBrushes.Black, 20, 80);
+            
 
             foreach (string pag in paginasDeRuta.Values)
             {
@@ -136,13 +137,20 @@ namespace MergePDF
                 {
                     pdfGeneratorGrandesConsumos(pag, document);
                     Console.WriteLine("Procesando: " + pag.Substring(0, 8) + "_" + pag.Substring(278, 10) + ".pdf");
+                    ultimoArchivo = pag.Substring(0, 8) + "_" + pag.Substring(278, 10) + ".pdf";
                 }
                 else
                 {
                     pdfGenerator(pag, document);
                     Console.WriteLine("Procesando: " + pag.Substring(0, 8) + "_" + pag.Substring(661, 10) + ".pdf");
+                    ultimoArchivo = pag.Substring(0, 8) + "_" + pag.Substring(278, 10) + ".pdf";
                 }
             }
+            gfxPrimerPagina.DrawString("RUTA NUM: " + ruta, fontCourierBold20, XBrushes.Black, 20, 30);
+            gfxPrimerPagina.DrawString("CANTIDAD DE FACTURAS: " + cantidad, fontCourierBold20, XBrushes.Black, 20, 55);
+            gfxPrimerPagina.DrawString("ULTIMA FACTURA: " + ultimoArchivo, fontCourierBold20, XBrushes.Black, 20, 80);
+
+
 
             document.Options.FlateEncodeMode = PdfFlateEncodeMode.BestCompression;
             string filename = "PdfPrueba.pdf";
@@ -150,7 +158,7 @@ namespace MergePDF
             document.Save(filename);
 
             // File.Delete(filename);
-            //System.Diagnostics.Process.Start(filename);
+            System.Diagnostics.Process.Start(filename);
             string cPrinter = GetDefaultPrinter();
             string cRun = "SumatraPDF.exe";
             string arguments = " -print-to \"" + cPrinter + "\" " + " -print-settings \"" + "1x" + "\" " + "-silent " + filename;
